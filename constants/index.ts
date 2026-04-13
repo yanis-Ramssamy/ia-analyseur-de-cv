@@ -1,4 +1,4 @@
-import type { Resume } from "../types/index.d.ts";
+import type { Resume } from "../types";
 
 export const resumes: Resume[] = [
     {

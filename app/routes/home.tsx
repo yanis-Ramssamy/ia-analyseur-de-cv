@@ -20,9 +20,6 @@ export default function Home() {
     const next = location.search.split('next=')[1];
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if(!auth.isAuthenticated) navigate('/auth?next=/');
-    }, [auth.isAuthenticated])
 
     return <main className={"bg-[url('/images/bg-main.svg')]bg-cover"}>
       <Navbar />

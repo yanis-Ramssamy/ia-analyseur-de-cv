@@ -1,7 +1,7 @@
 import React from 'react'
 import {Link} from "react-router";
-import {resume} from "react-dom/server";
 import ScoreCircle from "~/components/ScoreCircle";
+import type { Resume } from "../../types";
 
 
 const ResumeCard = ({ resume : { id, companyName, jobTitle, feedback, imagePath }}: { resume: Resume }) => {
