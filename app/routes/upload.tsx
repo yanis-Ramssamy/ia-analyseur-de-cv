@@ -26,7 +26,7 @@ const Upload = () => {
         console.log('Starting analysis for file:', file.name);
         setIsProcessing(true);
         setError(null);
-        setStatusText('uploading the file...');
+        setStatusText('Téléchargement du fichier...');
         setFormData({ companyName, jobTitle, jobDescription });
 
         try {
@@ -40,32 +40,32 @@ const Upload = () => {
             
             if (!uploadedFile || (!uploadedFile.path && !uploadedFile[0]?.path)) {
                 console.error('Upload failed: No file or path returned', uploadedFile);
-                setError('Failed to upload resume. Please try again.');
+                setError('Échec du téléchargement du CV. Veuillez réessayer.');
                 return;
             }
             const filePath = uploadedFile.path || uploadedFile[0]?.path;
 
-            setStatusText('Converting to image...');
+            setStatusText('Conversion en image...');
             const imageFile = await convertPdfToImage(file);
             if(!imageFile.file) {
                 console.error('PDF Conversion error:', imageFile.error);
-                setError(`Failed to convert PDF to image. ${imageFile.error || ''}`);
+                setError(`Échec de la conversion du PDF en image. ${imageFile.error || ''}`);
                 return;
             }
 
-            setStatusText('Uploading the image...');
+            setStatusText('Téléchargement de l\'image...');
             const uploadedImageResult = await fs.upload([imageFile.file]);
             console.log('Image upload result:', uploadedImageResult);
             const uploadedImage = Array.isArray(uploadedImageResult) ? uploadedImageResult[0] : uploadedImageResult;
             
             if(!uploadedImage || (!uploadedImage.path && !uploadedImage[0]?.path)) {
                 console.error('Image upload failed', uploadedImage);
-                setError('Failed to upload image. Please try again.');
+                setError('Échec du téléchargement de l\'image. Veuillez réessayer.');
                 return;
             }
             const imagePath = uploadedImage.path || uploadedImage[0]?.path;
 
-            setStatusText('Preparing data...');
+            setStatusText('Préparation des données...');
             const uuid = generateUUID();
             const data = {
                 id: uuid,
@@ -76,7 +76,7 @@ const Upload = () => {
             }
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
-            setStatusText('Analyzing...');
+            setStatusText('Analyse en cours...');
             const feedback = await ai.feedback(
                 filePath,
                 prepareInstructions({ jobTitle, jobDescription })
@@ -84,7 +84,7 @@ const Upload = () => {
             
             if (!feedback) {
                 console.error('AI Feedback failed: No response');
-                setError('Failed to analyze resume. AI service returned no response.');
+                setError('Échec de l\'analyse du CV. Le service d\'IA n\'a renvoyé aucune réponse.');
                 return;
             }
 
@@ -109,20 +109,20 @@ const Upload = () => {
                     }
                 } catch (innerError) {
                     console.error('Failed to parse AI feedback:', feedbackText);
-                    setError('Failed to parse AI response. It might not be in the expected format.');
+                    setError('Échec de l\'analyse de la réponse de l\'IA. Le format n\'est peut-être pas celui attendu.');
                     return;
                 }
             }
 
             data.feedback = parsedFeedback;
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
-            setStatusText('Analysis complete, redirecting...');
+            setStatusText('Analyse terminée, redirection...');
             console.log('Final data:', data);
             navigate(`/resume/${uuid}`);
         } catch (error: any) {
             console.error('An unexpected error occurred during analysis:', error);
             const message = error?.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
-            setError(`An unexpected error occurred. ${message}`);
+            setError(`Une erreur inattendue est survenue. ${message}`);
         } finally {
             setIsProcessing(false);
         }
@@ -165,62 +165,62 @@ const Upload = () => {
             <Navbar />
             <section className="main-section">
                 <div className="page-heading py-16">
-                    <h1>Smart feedback for your dream job</h1>
+                    <h1>Des retours intelligents pour le job de vos rêves</h1>
                     {isProcessing ? (
                         <>
                             <h2>{statusText}</h2>
                             <img src="/images/resume-scan.gif" className="w-full" />
                         </>
                     ) : (
-                        <h2>Drop your resume for an ATS score and improvement tips</h2>
+                        <h2>Déposez votre CV pour obtenir un score ATS et des conseils d'amélioration</h2>
                     )}
 
                     {!isProcessing && (
                         <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">
                             {error && (
                                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                    <strong className="font-bold">Error! </strong>
+                                    <strong className="font-bold">Erreur ! </strong>
                                     <span className="block sm:inline">{error}</span>
                                 </div>
                             )}
                             <div className="form-div">
-                                <label htmlFor="company-name">Company Name</label>
+                                <label htmlFor="company-name">Nom de l'entreprise</label>
                                 <input 
                                     type="text" 
                                     name="company-name" 
-                                    placeholder="Company Name" 
+                                    placeholder="Nom de l'entreprise" 
                                     id="company-name" 
                                     defaultValue={formData.companyName}
                                 />
                             </div>
                             <div className="form-div">
-                                <label htmlFor="job-title">Job Title</label>
+                                <label htmlFor="job-title">Titre du poste</label>
                                 <input 
                                     type="text" 
                                     name="job-title" 
-                                    placeholder="Job Title" 
+                                    placeholder="Titre du poste" 
                                     id="job-title" 
                                     defaultValue={formData.jobTitle}
                                 />
                             </div>
                             <div className="form-div">
-                                <label htmlFor="job-description">Job Description</label>
+                                <label htmlFor="job-description">Description du poste</label>
                                 <textarea 
                                     rows={5} 
                                     name="job-description" 
-                                    placeholder="Job Description" 
+                                    placeholder="Description du poste" 
                                     id="job-description" 
                                     defaultValue={formData.jobDescription}
                                 />
                             </div>
 
                             <div className="form-div">
-                                <label htmlFor="uploader">Upload Resume</label>
+                                <label htmlFor="uploader">Télécharger votre CV</label>
                                 <FileUploader onFileSelect={handleFileSelect} />
                                 </div>
 
                             <button className="primary-button" type="submit">
-                                Analyze Resume
+                                Analyser le CV
                             </button>
                         </form>
                     )}

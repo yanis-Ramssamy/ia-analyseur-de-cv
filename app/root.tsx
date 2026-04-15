@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import {usePuterStore} from "~/lib/puter";
 import {useEffect} from "react";
+import {useLocation, useNavigate} from "react-router";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,12 +26,56 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes en millisecondes
+
 export function Layout({ children }: { children: React.ReactNode }) {
-    const { init } = usePuterStore();
+    const { init, auth } = usePuterStore();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         init()
     }, [init]);
+
+    useEffect(() => {
+        if (!auth.isAuthenticated || location.pathname === '/auth') return;
+
+        const updateLastActivity = () => {
+            localStorage.setItem('lastActivity', Date.now().toString());
+        };
+
+        const checkInactivity = () => {
+            const lastActivity = localStorage.getItem('lastActivity');
+            if (lastActivity) {
+                const elapsed = Date.now() - parseInt(lastActivity, 10);
+                if (elapsed > INACTIVITY_TIMEOUT) {
+                    auth.signOut();
+                    navigate('/auth');
+                }
+            } else {
+                updateLastActivity();
+            }
+        };
+
+        // Initialiser l'activité lors de la première charge si authentifié
+        if (!localStorage.getItem('lastActivity')) {
+            updateLastActivity();
+        }
+
+        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+        events.forEach(event => {
+            window.addEventListener(event, updateLastActivity);
+        });
+
+        const interval = setInterval(checkInactivity, 30000); // Vérifier toutes les 30 secondes
+
+        return () => {
+            events.forEach(event => {
+                window.removeEventListener(event, updateLastActivity);
+            });
+            clearInterval(interval);
+        };
+    }, [auth.isAuthenticated, auth.signOut, navigate, location.pathname]);
 
 
     return (
