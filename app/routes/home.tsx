@@ -1,9 +1,15 @@
 import type { Route } from "./+types/home";
-import Navbar from "~/components/Navbar";
-import ResumeCard from "~/components/ResumeCard";
+import Navbar from "~/components/navbar";
+import ResumeCard from "~/components/resumeCard";
 import {usePuterStore} from "~/lib/puter";
 import {Link, useNavigate} from "react-router";
 import {useEffect, useState} from "react";
+import type { Resume } from "types";
+
+interface KVItem {
+    key: string;
+    value: string;
+}
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -24,20 +30,32 @@ export default function Home() {
 
     useEffect(() => {
         const loadResumes = async () => {
+            if (!auth.isAuthenticated || isLoading) return;
+            
             setLoadingResumes(true);
 
-            const resumes = (await kv.list('resume:*', true)) as KVItem[];
+            try {
+                const kvResumes = (await kv.list('resume:*', true)) as KVItem[];
 
-            const parsedResumes = resumes?.map((resume) => (
-                JSON.parse(resume.value) as Resume
-            ))
+                const parsedResumes = kvResumes?.map((item) => {
+                    try {
+                        return JSON.parse(item.value) as Resume;
+                    } catch (e) {
+                        console.error("Failed to parse resume:", item.key, e);
+                        return null;
+                    }
+                }).filter((r): r is Resume => r !== null);
 
-            setResumes(parsedResumes || []);
-            setLoadingResumes(false);
+                setResumes(parsedResumes || []);
+            } catch (error) {
+                console.error("Failed to load resumes:", error);
+            } finally {
+                setLoadingResumes(false);
+            }
         }
 
         loadResumes()
-    }, []);
+    }, [auth.isAuthenticated, isLoading, kv]);
 
     if (isLoading) {
         return (

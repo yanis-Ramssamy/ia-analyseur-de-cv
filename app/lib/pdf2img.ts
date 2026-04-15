@@ -23,6 +23,7 @@ async function loadPdfJs(): Promise<any> {
     }).catch(err => {
         console.error("Failed to load PDF.js from CDN:", err);
         // Fallback to local if CDN fails
+        // @ts-ignore
         return import("pdfjs-dist/build/pdf.mjs").then((lib) => {
             lib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
             pdfjsLib = lib;
