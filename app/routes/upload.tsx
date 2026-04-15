@@ -1,4 +1,4 @@
-import React, {type FormEvent, useState} from 'react'
+import React, {type FormEvent, useState, useEffect} from 'react'
 import Navbar from "~/components/navbar";
 import FileUploader from "~/components/FileUploader";
 import {usePuterStore} from "~/lib/puter";
@@ -11,6 +11,11 @@ const Upload = () => {
 
     const { auth, isLoading, fs, ai, kv } = usePuterStore();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!isLoading && !auth.isAuthenticated) navigate('/auth?next=/upload');
+    }, [auth.isAuthenticated, isLoading, navigate]);
+
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusText, setStatusText] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -158,6 +163,18 @@ const Upload = () => {
 
     const handleFileSelect = (file: File | null) => {
         setFile(file)
+    }
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
+
+    if (!auth.isAuthenticated) {
+        return null;
     }
 
     return (

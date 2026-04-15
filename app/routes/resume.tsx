@@ -23,8 +23,8 @@ const Resume = () => {
 
 
     useEffect(() => {
-        if(!isLoading && !auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
-    }, [isLoading])
+        if (!isLoading && !auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
+    }, [isLoading, auth.isAuthenticated, navigate, id])
 
     useEffect(() => {
         const loadResume = async () => {
@@ -52,6 +52,18 @@ const Resume = () => {
 
         loadResume();
     }, [id]);
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
+
+    if (!auth.isAuthenticated) {
+        return null;
+    }
 
     return (
         <main  className="!pt-0">

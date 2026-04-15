@@ -13,14 +13,14 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-    const { auth, kv } = usePuterStore();
+    const { auth, kv, isLoading } = usePuterStore();
     const navigate = useNavigate();
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loadingResumes, setLoadingResumes] = useState(false);
 
     useEffect(() => {
-        if(!auth.isAuthenticated) navigate('/auth?next=/');
-    }, [auth.isAuthenticated])
+        if (!isLoading && !auth.isAuthenticated) navigate('/auth?next=/');
+    }, [auth.isAuthenticated, isLoading, navigate])
 
     useEffect(() => {
         const loadResumes = async () => {
@@ -38,6 +38,18 @@ export default function Home() {
 
         loadResumes()
     }, []);
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
+
+    if (!auth.isAuthenticated) {
+        return null;
+    }
 
     return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
         <Navbar />
