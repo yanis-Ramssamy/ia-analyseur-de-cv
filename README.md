@@ -6,12 +6,19 @@ FiltreTalent est une application web moderne conçue pour aider les candidats à
 ✨ Fonctionnalités
 
 🔐 Authentification Sécurisée : Connexion via Puter.js.
+
 📄 Analyse de CV : Support des fichiers PDF.
+
 🤖 IA Intégrée : Analyse intelligente utilisant les modèles de langage de Puter.
+
 📊 Score ATS : Évaluation de la pertinence de votre profil par rapport à l'offre.
+
 💡 Conseils d'Amélioration : Recommandations personnalisées sur les mots-clés, la structure et le contenu.
+
 📋 Historique : Suivez vos différentes candidatures et l'évolution de vos scores.
+
 🛠️ Technologies Utilisées
+
 Frontend : React 19 & React Router 7
 Styling : Tailwind CSS
 Backend & Services : Puter.js (Authentification, KV Store, Cloud File System, AI)
