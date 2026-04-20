@@ -1,7 +1,10 @@
 FiltreTalent - Analyseur de CV Intelligent 🚀
+
+
 FiltreTalent est une application web moderne conçue pour aider les candidats à optimiser leurs CV pour les systèmes de suivi des candidatures (ATS). En utilisant l'intelligence artificielle, l'application compare votre CV à une description de poste spécifique et vous fournit un score de compatibilité ainsi que des conseils d'amélioration concrets.
 
 ✨ Fonctionnalités
+
 🔐 Authentification Sécurisée : Connexion via Puter.js.
 📄 Analyse de CV : Support des fichiers PDF.
 🤖 IA Intégrée : Analyse intelligente utilisant les modèles de langage de Puter.
@@ -14,7 +17,9 @@ Styling : Tailwind CSS
 Backend & Services : Puter.js (Authentification, KV Store, Cloud File System, AI)
 Traitement de fichiers : pdfjs-dist pour la conversion PDF vers Image.
 Gestion d'état : Zustand
+
 🚀 Démarrage Rapide
+
 Installation
 Clonez le dépôt et installez les dépendances :
 
